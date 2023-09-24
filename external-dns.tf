@@ -131,58 +131,6 @@ resource "kubernetes_deployment" "external_dns" {
   }
 }
 
-resource "kubernetes_pod_security_policy" "external_dns" {
-  metadata {
-    name = "external-dns-${var.external_dns_namespace}"
-  }
-  spec {
-    privileged                 = false
-    allow_privilege_escalation = false
-
-    volumes = [
-      "configMap",
-      "emptyDir",
-      "projected",
-      "secret",
-      "downwardAPI",
-      "hostPath",
-    ]
-    host_network = false
-    host_ipc     = false
-    host_pid     = false
-
-
-    run_as_user {
-      rule = "MustRunAs"
-      range {
-        min = 1001
-        max = 1001
-      }
-    }
-
-    se_linux {
-      rule = "RunAsAny"
-    }
-
-    supplemental_groups {
-      rule = "MustRunAs"
-      range {
-        min = 1001
-        max = 1001
-      }
-    }
-
-    fs_group {
-      rule = "MustRunAs"
-      range {
-        min = 1001
-        max = 1001
-      }
-    }
-    #    read_only_root_filesystem = true
-  }
-}
-
 resource "kubernetes_cluster_role" "external_dns_psp" {
   metadata {
     name = "external-dns-psp-${var.external_dns_namespace}"
