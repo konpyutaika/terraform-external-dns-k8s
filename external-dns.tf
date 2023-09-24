@@ -130,33 +130,3 @@ resource "kubernetes_deployment" "external_dns" {
     }
   }
 }
-
-resource "kubernetes_cluster_role" "external_dns_psp" {
-  metadata {
-    name = "external-dns-psp-${var.external_dns_namespace}"
-  }
-
-  rule {
-    api_groups     = ["extensions", ]
-    resources      = ["podsecuritypolicies", ]
-    verbs          = ["use", ]
-    resource_names = [kubernetes_pod_security_policy.external_dns.metadata[0].name]
-  }
-}
-
-# Binding external-dns cluster role, with the external-dns Service account.
-resource "kubernetes_cluster_role_binding" "external_dns_psp" {
-  metadata {
-    name = "external-dns-psp-${var.external_dns_namespace}"
-  }
-  role_ref {
-    api_group = "rbac.authorization.k8s.io"
-    kind      = "ClusterRole"
-    name      = kubernetes_cluster_role.external_dns_psp.metadata[0].name
-  }
-  subject {
-    kind      = "ServiceAccount"
-    name      = kubernetes_service_account.external_dns.metadata[0].name
-    namespace = kubernetes_service_account.external_dns.metadata[0].namespace
-  }
-}
