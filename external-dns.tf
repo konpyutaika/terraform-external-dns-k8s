@@ -20,7 +20,7 @@ locals {
       verbs      = ["get", "watch", "list", ]
     },
     {
-      api_groups = ["extensions", ]
+      api_groups = ["networking", "extensions", "networking.k8s.io"]
       resources  = ["ingresses", ]
       verbs      = ["get", "watch", "list", ]
     }
@@ -28,17 +28,11 @@ locals {
 
   cluster_role_rules_additional = var.watch_istio ? [
     {
-      api_groups = ["networking", "extensions", "networking.k8s.io"]
-      resources  = ["ingresses", ]
-      verbs      = ["get", "watch", "list", ]
-    },
-    {
       api_groups = ["networking.istio.io"]
       resources  = ["gateways", "virtualservices"]
       verbs      = ["get", "watch", "list", ]
     }
   ] : []
-
   cluster_role_rules = concat(local.cluster_role_rules_default, local.cluster_role_rules_additional)
 }
 
